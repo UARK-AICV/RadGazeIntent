@@ -97,7 +97,6 @@ def evaluate(
     return dict_res
 
 
-# from common.sinkhorn import SinkhornDistance
 
 SEED = 0
 random.seed(SEED)

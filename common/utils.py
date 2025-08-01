@@ -293,29 +293,6 @@ def collect_trajs(
     return trajs
 
 
-def compute_return_advantage(rewards, values, gamma, mtd="CRITIC", tau=0.96):
-    device = rewards.device
-    acc_reward = torch.zeros_like(rewards, dtype=torch.float, device=device)
-    acc_reward[-1] = rewards[-1]
-    for i in reversed(range(acc_reward.size(0) - 1)):
-        acc_reward[i] = rewards[i] + gamma * acc_reward[i + 1]
-
-    # compute advantages
-    if mtd == "MC":  # Monte-Carlo estimation
-        advs = acc_reward - values[:-1]
-    elif mtd == "CRITIC":  # critic estimation
-        advs = rewards + gamma * values[1:] - values[:-1]
-    elif mtd == "GAE":  # generalized advantage estimation
-        delta = rewards + gamma * values[1:] - values[:-1]
-        adv = torch.zeros_like(delta, dtype=torch.float, device=device)
-        adv[-1] = delta[-1]
-        for i in reversed(range(delta.size(0) - 1)):
-            adv[i] = delta[i] + gamma * tau * adv[i + 1]
-    else:
-        raise NotImplementedError
-
-    return acc_reward.squeeze(), advs.squeeze()
-
 
 def process_trajs(trajs, gamma, mtd="CRITIC", tau=0.96):
     # compute discounted cummulative reward
@@ -959,59 +936,6 @@ def get_prior_maps(gt_scanpaths, im_w, im_h, visual_angle=24):
     )
     return prior_maps
 
-
-def get_IoM(bb1, bb2):
-    """
-    Calculate the Intersection over min area of two bounding boxes.
-
-    Parameters
-    ----------
-    bb1 : dict
-        Keys: {'x1', 'x2', 'y1', 'y2'}
-        The (x1, y1) position is at the top left corner,
-        the (x2, y2) position is at the bottom right corner
-    bb2 : dict
-        Keys: {'x1', 'x2', 'y1', 'y2'}
-        The (x, y) position is at the top left corner,
-        the (x2, y2) position is at the bottom right corner
-
-    Returns
-    -------
-    float
-
-    """
-    assert bb1["x1"] < bb1["x2"]
-    assert bb1["y1"] < bb1["y2"]
-    assert bb2["x1"] < bb2["x2"]
-    assert bb2["y1"] < bb2["y2"]
-
-    # determine the coordinates of the intersection rectangle
-    x_left = max(bb1["x1"], bb2["x1"])
-    y_top = max(bb1["y1"], bb2["y1"])
-    x_right = min(bb1["x2"], bb2["x2"])
-    y_bottom = min(bb1["y2"], bb2["y2"])
-
-    if x_right < x_left or y_bottom < y_top:
-        return 0.0
-
-    # The intersection of two axis-aligned bounding boxes is always an
-    # axis-aligned bounding box
-    intersection_area = (x_right - x_left) * (y_bottom - y_top)
-
-    # compute the area of both AABBs
-    bb1_area = (bb1["x2"] - bb1["x1"]) * (bb1["y2"] - bb1["y1"])
-    bb2_area = (bb2["x2"] - bb2["x1"]) * (bb2["y2"] - bb2["y1"])
-
-    # # compute the intersection over union by taking the intersection
-    # # area and dividing it by the sum of prediction + ground-truth
-    # # areas - the interesection area
-    # iou = intersection_area / float(bb1_area + bb2_area - intersection_area)
-    iom = intersection_area / float(min(bb1_area, bb2_area))
-    iom = np.clip(iom, 0, 1)
-    # assert iom >= 0.0, "out-of-range IoM = {:.3f}".format(iom)
-    # assert iom <= 1.0, "out-of-range IoM = {:.3f}".format(iom)
-
-    return iom
 
 
 def generate_square_subsequent_mask(sz):

@@ -264,26 +264,6 @@ def compute_avgSPRatio(trajs, target_annos, max_step, tasks=None):
         return np.mean([x[1] for x in all_sp_ratios])
 
 
-def compute_cdf_auc(cdf):
-    if isinstance(cdf, dict):
-        auc = {}
-        for k, v in cdf.items():
-            auc[k] = v[0] + v[-1] + np.sum(v[1:-1])
-        return auc
-    else:
-        return cdf[0] + cdf[-1] + np.sum(cdf[1:-1])
-
-
-def compute_prob_mismatch(cdf, human_mean_cdf):
-    if isinstance(cdf, dict):
-        return dict(
-            zip(
-                cdf.keys(),
-                np.sum(np.abs(np.array(list(cdf.values())) - human_mean_cdf), axis=1),
-            )
-        )
-    else:
-        return np.sum(np.abs(cdf - human_mean_cdf))
 
 
 def smooth_action_map(action_maps):
@@ -398,60 +378,3 @@ def compute_spatial_metrics_by_step(
     return avg_info_gain / num_fixs, cc / len(sample_ids), nss / num_fixs
 
 
-# Conditional saliency scores
-def compute_info_gain(predicted_probs, gt_fixs, base_probs, eps=2.2204e-16):
-    fired_probs = predicted_probs[
-        torch.arange(gt_fixs.size(0)), gt_fixs[:, 1], gt_fixs[:, 0]
-    ]
-    fired_base_probs = base_probs[
-        torch.arange(gt_fixs.size(0)), gt_fixs[:, 1], gt_fixs[:, 0]
-    ]
-    IG = torch.sum(torch.log2(fired_probs + eps) - torch.log2(fired_base_probs + eps))
-    return IG
-
-
-def compute_NSS(saliency_map, gt_fixs):
-    mean = saliency_map.view(gt_fixs.size(0), -1).mean(dim=1)
-    std = saliency_map.view(gt_fixs.size(0), -1).std(dim=1)
-    std[std == 0] = 1  # avoid division by 0
-
-    value = saliency_map[torch.arange(gt_fixs.size(0)), gt_fixs[:, 1], gt_fixs[:, 0]]
-    value -= mean
-    value /= std
-
-    return value.sum()
-
-
-def compute_cAUC(s_map, gt_next_fixs):
-    """Compute AUC_Judd metric for saliency maps.
-
-    This is equivalent to compute the percentile of the saliency of ground-truth
-    fixation in the predicted saliency map.
-
-    Args:
-       s_map: [B, H, W] tensor
-       gt_next_fixs: [B, 2] tensor
-    """
-    # thresholds are calculated from the salience map, only at places where fixations are present
-    thresholds = s_map[
-        torch.arange(len(gt_next_fixs)), gt_next_fixs[:, 1], gt_next_fixs[:, 0]
-    ]
-
-    bs = len(gt_next_fixs)
-
-    area = []
-    area.append(torch.zeros(bs, 2))
-
-    # In the salience map, keep only those pixels with values above threshold
-    temp = torch.zeros_like(s_map)
-    temp[s_map >= thresholds.view(bs, 1, 1)] = 1.0
-    temp = temp.view(bs, -1)
-
-    # For each image, three is only one positive
-    tp = torch.ones(bs)
-    fp = (temp.sum(-1) - 1) / (temp.size(-1) - 1)
-    area.append(torch.stack([tp, fp.cpu()], dim=1))
-    area.append(torch.ones(bs, 2))
-    area = torch.stack(area, dim=1)
-
-    return torch.trapz(area[:, :, 0], area[:, :, 1]).sum()

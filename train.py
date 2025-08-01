@@ -4,10 +4,8 @@ import os
 import random
 from collections import defaultdict
 
-import einops
 import numpy as np
 import torch
-import torch.linalg as LA
 from torch.utils.tensorboard import SummaryWriter
 from tqdm import tqdm
 
@@ -17,8 +15,6 @@ from common.utils import (
 )
 from radgazeintent.builder import build
 from radgazeintent.evaluation import evaluate
-
-# from common.sinkhorn import SinkhornDistance
 
 SEED = 0
 random.seed(SEED)
@@ -129,38 +125,6 @@ def run_evaluation():
     print("TP:", rst_tp)
 
     return rst_tp
-
-
-def dice_loss(inputs, targets, num_objects, loss_on_multimask=False):
-    """
-    Compute the DICE loss, similar to generalized IOU for masks
-    Reference:
-        Dice Semimetric Losses: Optimizing the Dice Score with Soft Labels.
-                Wang, Z. et. al. MICCAI 2023.
-    Args:
-        inputs: A float tensor of arbitrary shape.
-                The predictions for each example.
-        targets: A float tensor with the same shape as inputs. Stores the binary
-                 classification label for each element in inputs
-                (0 for the negative class and 1 for the positive class).
-        num_objects: Number of objects in the batch
-        loss_on_multimask: True if multimask prediction is enabled
-    Returns:
-        Dice loss tensor
-    """
-    inputs = inputs.sigmoid()
-    if loss_on_multimask:
-        inputs = einops.rearrange(inputs, "b l d -> b d l")
-        targets = einops.rearrange(targets, "b l d -> b d l")
-    else:
-        inputs = inputs.flatten(1)
-    denominator = inputs.sum(-1) + targets.sum(-1)
-    difference = LA.vector_norm(inputs - targets, ord=1, dim=-1)
-    numerator = denominator - difference
-    loss = 1 - (numerator + 1) / (denominator + 1)
-    if loss_on_multimask:
-        return loss.mean()
-    return loss.sum() / num_objects
 
 
 if __name__ == "__main__":
