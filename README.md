@@ -15,7 +15,7 @@
 **RadGazeIntent** is a deep learning framework that interprets the diagnostic intentions behind radiologists' eye movements during chest X-ray analysis. Unlike existing approaches that mimic radiologist behavior, our method decodes the *why* behind each fixation point, bridging visual search patterns with diagnostic reasoning.
 
 
-**Paper accepted at ACM MM 2025** - A top-tier international conference on multimedia research
+**Paper accepted at ACM MM 2025** - A top-tier international conference on multimedia research 🎉 🎉 🎉 
 
 ## Installation
 
