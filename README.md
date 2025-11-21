@@ -15,9 +15,9 @@
 **RadGazeIntent** is a deep learning framework that interprets the diagnostic intentions behind radiologists' eye movements during chest X-ray analysis. Unlike existing approaches that mimic radiologist behavior, our method decodes the *why* behind each fixation point, bridging visual search patterns with diagnostic reasoning.
 
 
-🎉 **Paper accepted at ACM MM 2025** - A top-tier international conference on multimedia research
+**Paper accepted at ACM MM 2025** - A top-tier international conference on multimedia research
 
-## 🛠️ Installation
+## Installation
 
 
 
@@ -48,26 +48,26 @@ pip install uv
 uv pip install timm scipy opencv-python wget setuptools==59.5.0 einops protobuf==4.25.0
 ```
 
-## 📊 Datasets
+## Datasets
 
 RadGazeIntent introduces three intention-labeled datasets derived from existing eye-tracking datasets ([EGD](https://physionet.org/content/egd-cxr/1.0.0/) and [REFLACX](https://physionet.org/content/reflacx-xray-localization/1.0.0/)):
 
-📥 **Download**: All three datasets are available on [🤗 Hugging Face](https://huggingface.co/datasets/phamtrongthang/GazeIntent)
+**Download**: All three datasets are available on [🤗 Hugging Face](https://huggingface.co/datasets/phamtrongthang/GazeIntent)
 
-### 🔄 RadSeq (Systematic Sequential Search)
+### RadSeq (Systematic Sequential Search)
 Models radiologists following a structured checklist, focusing on one finding at a time.
 
-### 🔍 RadExplore (Uncertainty-driven Exploration) 
+### RadExplore (Uncertainty-driven Exploration)
 Captures opportunistic visual search where radiologists consider all findings simultaneously.
 
-### 🔄🔍 RadHybrid (Hybrid Pattern)
+### RadHybrid (Hybrid Pattern)
 Combines initial broad scanning with focused examination, representing real-world diagnostic behavior.
 
 <p align="center">
   <img src="assets/datasets.png" width="70%" alt="Dataset Creation Process"/>
 </p>
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Training
 
@@ -99,15 +99,15 @@ bash infer.sh
 ```
 
 
-## 🎯 Applications
+## Applications
 
 RadGazeIntent enables several downstream applications:
 
-- **🤖 Intention-aware AI Assistants**: Systems that understand what radiologists are looking for
-- **📚 Medical Education**: Training tools that analyze student gaze patterns  
-- **🔬 Cognitive Research**: Understanding expert visual reasoning processes
+- **Intention-aware AI Assistants**: Systems that understand what radiologists are looking for
+- **Medical Education**: Training tools that analyze student gaze patterns
+- **Cognitive Research**: Understanding expert visual reasoning processes
 
-## 📄 Citation
+## Citation
 
 If you find RadGazeIntent useful in your research, please consider citing:
 
@@ -120,33 +120,21 @@ If you find RadGazeIntent useful in your research, please consider citing:
 }
 ```
 
-<div align="center">
-
-**⭐ Star this repository if you find it useful! ⭐**
-
-</div>
-
-## 📜 License
+## License
 
 This project is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License - see the [LICENSE](LICENSE) file for details.
 
-## 🙏 Acknowledgments
+## Acknowledgments
 This material is based upon work supported by the National Science Foundation (NSF) under Award No OIA-1946391, NSF 2223793 EFRI BRAID, National Institutes of Health (NIH) 1R01CA277739-01.
 
 - **Datasets**: Built upon [EGD](https://physionet.org/content/egd-cxr/1.0.0/) and [REFLACX](https://physionet.org/content/reflacx-xray-localization/1.0.0/) eye-tracking datasets
 - **Backbone**: Uses [Detectron2](https://github.com/facebookresearch/detectron2) for feature extraction
 - **Inspiration**: Motivated by cognitive science research on expert visual reasoning
 
-## 📞 Contact
+## Contact
 **Primary Contact**: Trong Thang Pham (tp030@uark.edu)
 
 For questions, feedback, or collaboration opportunities, feel free to reach out! I would love to hear from you if you have any thoughts or suggestions about this work.
 
 **Note**: While we don't actively seek contributions to the codebase, we greatly appreciate and welcome feedback, discussions, and suggestions for improvements.
-
-## 📝 TODO
-
-- [ ] Improve code structure and modularity for better maintainability
-- [ ] Expand documentation with detailed tutorials and examples
-- [ ] Docker Support: Add containerized deployment options
 

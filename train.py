@@ -10,6 +10,7 @@ from torch.utils.tensorboard import SummaryWriter
 from tqdm import tqdm
 
 from common.config import JsonConfig
+from common.losses import focal_loss
 from common.utils import (
     transform_fixations,
 )
@@ -176,7 +177,7 @@ if __name__ == "__main__":
         pad_idx = hparams.Data.pad_idx
         use_focal_loss = hparams.Train.use_focal_loss
         loss_funcs = {
-            "CE_segment": dice_loss,
+            "CE_segment": focal_loss,
         }
 
         loss_weights = {
